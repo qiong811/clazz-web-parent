@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baizhi.dao.TStudentDao">
+
+    <resultMap type="com.baizhi.entity.TStudent" id="TStudentMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <!--<result property="age" column="age" jdbcType="INTEGER"/>-->
+        <result property="qq" column="qq" jdbcType="VARCHAR"/>
+        <result property="phone" column="phone" jdbcType="VARCHAR"/>
+        <result property="bir" column="bir" jdbcType="TIMESTAMP"/>
+        <!--<result property="starts" column="starts" jdbcType="VARCHAR"/>-->
+        <!--<result property="attr" column="attr" jdbcType="VARCHAR"/>-->
+        <result property="mark" column="mark" jdbcType="VARCHAR"/>
+        <!--<result property="clazzid" column="clazzId" jdbcType="VARCHAR"/>-->
+        <!--<result property="groupid" column="groupId" jdbcType="VARCHAR"/>-->
+        <!--<result property="cityid" column="cityId" jdbcType="VARCHAR"/>-->
+        <association property="clazz" javaType="com.baizhi.entity.TClazz">
+            <id property="id" column="clazzId"/>
+        </association>
+        <association property="group" javaType="com.baizhi.entity.TGroup">
+            <id property="id" column="groupId"/>
+        </association>
+        <association property="city" javaType="com.baizhi.entity.TCity">
+            <id property="id" column="cityId"/>
+        </association>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="TStudentMap">
+        select
+          id, name, age, qq, phone, bir, starts, attr, mark, clazzId, groupId, cityId
+        from t_student
+        where id = #{id}
+    </select>
+
+    <!--List<TStudent> queryAll();-->
+
+    <select id="queryAll" resultMap="TStudentMap">
+        select id, name, age, qq, phone, bir, starts, attr, mark, clazzId, groupId, cityId
+        from t_student
+    </select>
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from t_student
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="age != null">
+                and age = #{age}
+            </if>
+            <if test="qq != null and qq != ''">
+                and qq = #{qq}
+            </if>
+            <if test="phone != null and phone != ''">
+                and phone = #{phone}
+            </if>
+            <if test="bir != null">
+                and bir = #{bir}
+            </if>
+            <if test="starts != null and starts != ''">
+                and starts = #{starts}
+            </if>
+            <if test="attr != null and attr != ''">
+                and attr = #{attr}
+            </if>
+            <if test="mark != null and mark != ''">
+                and mark = #{mark}
+            </if>
+            <if test="clazzid != null and clazzid != ''">
+                and clazzId = #{clazz.id}
+            </if>
+            <if test="groupid != null and groupid != ''">
+                and groupId = #{group.id}
+            </if>
+            <if test="cityid != null and cityid != ''">
+                and cityId = #{city.id}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into t_student(name, age, qq, phone, bir, starts, attr, mark, clazzId, groupId, cityId)
+        values (#{name}, #{age}, #{qq}, #{phone}, #{bir}, #{starts}, #{attr}, #{mark}, #{clazz.id}, #{group.id}, #{city.id})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into t_student(name, age, qq, phone, bir, starts, attr, mark, clazzId, groupId, cityId)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.name}, #{entity.age}, #{entity.qq}, #{entity.phone}, #{entity.bir}, #{entity.starts},
+            #{entity.attr}, #{entity.mark}, #{entity.clazz.id}, #{entity.group.id}, #{entity.city.id})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into t_student(name, age, qq, phone, bir, starts, attr, mark, clazzId, groupId, cityId)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.name}, #{entity.age}, #{entity.qq}, #{entity.phone}, #{entity.bir}, #{entity.starts},
+            #{entity.attr}, #{entity.mark}, #{entity.clazz.id}, #{entity.group.id}, #{entity.city.id})
+        </foreach>
+        on duplicate key update
+        name = values(name),
+        age = values(age),
+        qq = values(qq),
+        phone = values(phone),
+        bir = values(bir),
+        starts = values(starts),
+        attr = values(attr),
+        mark = values(mark),
+        clazzId = values(clazzId),
+        groupId = values(groupId),
+        cityId = values(cityId)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update t_student
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="age != null">
+                age = #{age},
+            </if>
+            <if test="qq != null and qq != ''">
+                qq = #{qq},
+            </if>
+            <if test="phone != null and phone != ''">
+                phone = #{phone},
+            </if>
+            <if test="bir != null">
+                bir = #{bir},
+            </if>
+            <if test="starts != null and starts != ''">
+                starts = #{starts},
+            </if>
+            <if test="attr != null and attr != ''">
+                attr = #{attr},
+            </if>
+            <if test="mark != null and mark != ''">
+                mark = #{mark},
+            </if>
+            <if test="clazzid != null and clazzid != ''">
+                clazzId = #{clazz.id},
+            </if>
+            <if test="groupid != null and groupid != ''">
+                groupId = #{group.id},
+            </if>
+            <if test="cityid != null and cityid != ''">
+                cityId = #{city.id},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from t_student where id = #{id}
+    </delete>
+
+</mapper>
+

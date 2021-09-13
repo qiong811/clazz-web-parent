@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baizhi.dao.TGroupDao">
+
+    <resultMap type="com.baizhi.entity.TGroup" id="TGroupMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="created_at" column="createDate" jdbcType="TIMESTAMP"/>
+        <association property="clazz" javaType="com.baizhi.entity.TClazz">
+            <id property="id" column="clazzId" jdbcType="VARCHAR"/>
+        </association>
+
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="TGroupMap">
+        select
+          id, name, createDate, clazzId
+        from t_group
+        where id = #{id}
+    </select>
+
+    <!--List<TGroup> queryAll();-->
+    <select id="queryAll" resultMap="TGroupMap">
+        select id,name,createDate,clazzId from t_group
+    </select>
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from t_group
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="createdate != null">
+                and createDate = #{created_at}
+            </if>
+            <if test="clazzid != null and clazzid != ''">
+                and clazzId = #{clazz.id}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into t_group(name, createDate, clazzId)
+        values (#{name}, #{created_at}, #{clazz.id})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into t_group(name, createDate, clazzId)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.name}, #{entity.created_at}, #{entity.clazz.id})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into t_group(name, createDate, clazzId)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.name}, #{entity.created_at}, #{entity.clazz.id})
+        </foreach>
+        on duplicate key update
+        name = values(name),
+        createDate = values(createDate),
+        clazzId = values(clazzId)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update t_group
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="createdate != null">
+                createDate = #{created_at},
+            </if>
+            <if test="clazzid != null and clazzid != ''">
+                clazzId = #{clazz.id},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from t_group where id = #{id}
+    </delete>
+
+</mapper>
+

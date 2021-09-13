@@ -1,0 +1,54 @@
+server:
+  port: 8000
+spring:
+  application:
+    name: GATEWAY
+
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+    gateway:
+      routes:
+      - id: city_route
+        uri: lb://CITYS
+        predicates:
+        - Path=/clazz/city/cities/**
+        filters:
+        - StripPrefix=2
+      - id: tag_route
+        uri: lb://TAGS
+        predicates:
+        - Path=/clazz/tag/tags/**
+        filters:
+        - StripPrefix=2
+      - id: clazz_route
+        uri: lb://CLAZZS
+        predicates:
+        - Path=/clazz/clazz/clazzs/**
+        filters:
+        - StripPrefix=2
+      - id: group_route
+        uri: lb://GROUPS
+        predicates:
+        - Path=/clazz/group/groups/**
+        filters:
+        - StripPrefix=2
+      - id: student_route
+        uri: lb://STUDENTS
+        predicates:
+        - Path=/clazz/student/students/**
+        filters:
+        - StripPrefix=2
+
+      globalcors: # 解决cros跨域资源共享问题
+        cors-configurations:
+          '[/**]': #拦截所有请求加入跨域配置
+            allowedOrigins: "*"  #允许任意源访问
+            allowedMethods: "*"  #允许任意源任意请求方式访问
+            allowedHeaders: "*"  #允许任意源中任意请求方式携带任意请求头访问
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*" #开启所有web端点暴露

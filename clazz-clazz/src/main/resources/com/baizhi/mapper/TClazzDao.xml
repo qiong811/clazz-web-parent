@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baizhi.dao.TClazzDao">
+
+    <resultMap type="com.baizhi.entity.TClazz" id="TClazzMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="path" column="path" jdbcType="VARCHAR"/>
+        <association property="tag" javaType="com.baizhi.entity.TTag">
+            <id property="id" column="tagId"/>
+        </association>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="TClazzMap">
+        select
+          id, name, path, tagId
+        from t_clazz
+        where id = #{id}
+    </select>
+
+    <!--List<TClazz> queryAll();-->
+    <select id="queryAll" resultMap="TClazzMap">
+        select id,name,path,tagId from t_clazz
+    </select>
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from t_clazz
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="path != null and path != ''">
+                and path = #{path}
+            </if>
+            <if test="tagid != null and tagid != ''">
+                and tagId = #{tag.id}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into t_clazz(name, path, tagId)
+        values (#{name}, #{path}, #{tag.id})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into t_clazz(name, path, tagId)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.name}, #{entity.path}, #{entity.tag.id})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into t_clazz(name, path, tagId)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.name}, #{entity.path}, #{entity.tag.id})
+        </foreach>
+        on duplicate key update
+        name = values(name),
+        path = values(path),
+        tagId = values(tagId)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update t_clazz
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="path != null and path != ''">
+                path = #{path},
+            </if>
+            <if test="tagid != null and tagid != ''">
+                tagId = #{tag.id},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from t_clazz where id = #{id}
+    </delete>
+
+</mapper>
+
